@@ -1,6 +1,10 @@
 <div
   class="app-splash-screen"
-  [ngStyle]="{ left: windowWidth }"
+  [ngStyle]="{ 
+    left: windowWidth, 
+    opacity: opacityChange,
+    transition: splashTransition
+  }"
   *ngIf="showSplash"
 >
   <div class="app-splash-inner">
