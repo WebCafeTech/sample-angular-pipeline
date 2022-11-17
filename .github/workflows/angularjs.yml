@@ -75,7 +75,6 @@ jobs:
 
       - name: Push docker image to conatiner registory
         run: |
-          # docker login ghcr.io -u ${{ secrets.GH_SERVICE_ACCOUNT }} -p ${{ secrets.ASHFORD_GH_DOCKER_CONTAINER_REGISTERY }}
           docker login ghcr.io -u ${{ secrets.GHCR_SERVICE_ACCOUNT }} -p ${{ secrets.GHCR_SERVICE_TOKEN }}
           echo "Pushing docker image in ghcr $POC_IMAGE_NAME:$TAG"
           docker push $POC_IMAGE_NAME:$TAG
