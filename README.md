@@ -1,3 +1,5 @@
+[![Angular JS CI](https://github.com/FR-PAR-ASHFORD/sample-angular-pipeline/actions/workflows/angularjs.yml/badge.svg)](https://github.com/FR-PAR-ASHFORD/sample-angular-pipeline/actions/workflows/angularjs.yml)
+
 # sample-angular-pipeline
 This is a sample repository to understand the CICD process for angular app deployment
 

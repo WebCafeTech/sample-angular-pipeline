@@ -1,0 +1,81 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+# Author : Mukund Gohil
+
+name: Angular JS CI
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x, 18.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Cache node modules
+        uses: actions/cache@v1
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+            
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install NPM Dependencies
+        run: npm ci
+
+      - name: Run Unit Tests
+        run: npm run ci:test
+        continue-on-error: true
+
+      - name: Clean Distribution Directory
+        run: npm run ci:clean
+
+      - name: Build Application
+        run: npm run build
+      
+      - name: List Files in Distribution Directory
+        run: ls -R ./dist
+
+  dockerize:
+    name: dockerize and deploy
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/prod' 
+    env:
+      DEPLOYMENT_NAME: sample-angular-pipeline
+      POC_IMAGE_NAME: ghcr.io/fr-par-ashford/sample-angular-pipeline
+      TAG: dev-ft-0.0.1
+      REGISTRY: ghcr.io
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Build Docker Image
+        run: |
+          docker build --build-arg NODE_ENV="development" -t "$POC_IMAGE_NAME:$TAG" -f Dockerfile .
+          docker tag $POC_IMAGE_NAME:$TAG $POC_IMAGE_NAME:latest
+
+
+      - name: Push docker image to conatiner registory
+        run: |
+          docker login ghcr.io -u ${{ secrets.GHCR_SERVICE_ACCOUNT }} -p ${{ secrets.GHCR_SERVICE_TOKEN }}
+          echo "Pushing docker image in ghcr $POC_IMAGE_NAME:$TAG"
+          docker push $POC_IMAGE_NAME:$TAG
