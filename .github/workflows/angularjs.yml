@@ -53,29 +53,29 @@ jobs:
       - name: List Files in Distribution Directory
         run: ls -R ./dist
 
-  dockerize:
-    name: dockerize and deploy
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/prod' 
-    env:
-      DEPLOYMENT_NAME: sample-angular-pipeline
-      POC_IMAGE_NAME: ghcr.io/fr-par-ashford/sample-angular-pipeline
-      TAG: dev-ft-0.0.1
-      REGISTRY: ghcr.io
+#   dockerize:
+#     name: dockerize and deploy
+#     needs: build
+#     runs-on: ubuntu-latest
+#     if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/prod' 
+#     env:
+#       DEPLOYMENT_NAME: sample-angular-pipeline
+#       POC_IMAGE_NAME: ghcr.io/fr-par-ashford/sample-angular-pipeline
+#       TAG: dev-ft-0.0.1
+#       REGISTRY: ghcr.io
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v3
 
-      - name: Build Docker Image
-        run: |
-          docker build --build-arg NODE_ENV="development" -t "$POC_IMAGE_NAME:$TAG" -f Dockerfile .
-          docker tag $POC_IMAGE_NAME:$TAG $POC_IMAGE_NAME:latest
+#       - name: Build Docker Image
+#         run: |
+#           docker build --build-arg NODE_ENV="development" -t "$POC_IMAGE_NAME:$TAG" -f Dockerfile .
+#           docker tag $POC_IMAGE_NAME:$TAG $POC_IMAGE_NAME:latest
 
 
-      - name: Push docker image to conatiner registory
-        run: |
-          docker login ghcr.io -u ${{ secrets.GHCR_SERVICE_ACCOUNT }} -p ${{ secrets.GHCR_SERVICE_TOKEN }}
-          echo "Pushing docker image in ghcr $POC_IMAGE_NAME:$TAG"
-          docker push $POC_IMAGE_NAME:$TAG
+#       - name: Push docker image to conatiner registory
+#         run: |
+#           docker login ghcr.io -u ${{ secrets.GHCR_SERVICE_ACCOUNT }} -p ${{ secrets.GHCR_SERVICE_TOKEN }}
+#           echo "Pushing docker image in ghcr $POC_IMAGE_NAME:$TAG"
+#           docker push $POC_IMAGE_NAME:$TAG
