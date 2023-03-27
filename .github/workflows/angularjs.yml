@@ -61,7 +61,7 @@ jobs:
         run: npm run ci:clean
 
       - name: Build Application
-        run: npm run build. --prod
+        run: npm run build --omit=dev
       
       - name: List Files in Distribution Directory
         run: ls -R ./dist
